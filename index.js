@@ -22,22 +22,38 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         //Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        const jewelryCollection = client.db("jewelryDB").collection("jewelry");
+    await client.connect();
+    const jewelryCollection = client.db("jewelryDB").collection("jewelry");
+    const jewelryCategories = client.db('jewelryDB').collection('jewelryCategories');
 
-        app.post('/jewelry', async(req, res) => {
+        app.post('/jewelry', async (req, res) => {
             const newJewelry = req.body;
             console.log(newJewelry);
             const result = await jewelryCollection.insertOne(newJewelry);
             res.send(result);
         });
-        app.get('/jewelry',async(req,res) =>{
+        app.get('/jewelry', async (req, res) => {
             const cursor = jewelryCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
-
-
+        //*************************************
+        app.post('/categories', async (req, res) => {
+            const category = req.body;
+            console.log(category);
+            const result = await jewelryCategories.insertOne(category);
+            res.send(result);
+        });
+        app.get('/categories', async (req, res) => {
+                console.log(req.query.subCategory);
+                let query = {};
+                if (req.query?.subCategory) {
+                    query = { subCategory: req.query.subCategory }
+                }
+                const result = await jewelryCollection.find(query).toArray();
+                res.send(result);
+              })
+    
 
 
 
