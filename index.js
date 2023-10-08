@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.pluunuw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -24,7 +24,7 @@ async function run() {
         //Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const jewelryCollection = client.db("jewelryDB").collection("jewelry");
-    const jewelryCategories = client.db('jewelryDB').collection('jewelryCategories');
+    // const jewelryCategories = client.db('jewelryDB').collection('jewelryCategories');
 
         app.post('/jewelry', async (req, res) => {
             const newJewelry = req.body;
@@ -38,14 +38,7 @@ async function run() {
             res.send(result);
         })
         //*************************************
-        app.post('/categories', async (req, res) => {
-            const category = req.body;
-            console.log(category);
-            const result = await jewelryCategories.insertOne(category);
-            res.send(result);
-        });
         app.get('/categories', async (req, res) => {
-                console.log(req.query.subCategory);
                 let query = {};
                 if (req.query?.subCategory) {
                     query = { subCategory: req.query.subCategory }
@@ -53,6 +46,14 @@ async function run() {
                 const result = await jewelryCollection.find(query).toArray();
                 res.send(result);
               })
+        //***************************************
+        app.get('/jewelry/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await jewelryCollection.findOne(query);
+            res.send(result);
+      })
+    
     
 
 
