@@ -53,6 +53,32 @@ async function run() {
             const result = await jewelryCollection.findOne(query);
             res.send(result);
       })
+      //**************************************
+      app.delete('/jewelry/:id',async(req,res) =>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await jewelryCollection.deleteOne(query);
+        res.send(result)
+      })//This code for delete
+
+      // send data for my jewelry page
+    //   app.post('/Bookings', async (req, res) => {
+    //     const booking = req.body;
+    //     console.log(booking);
+    //     const result = await BookingCollection.insertOne(booking);
+    //     res.send(result);
+    // });
+    
+     app.get('/bookings', async (req, res) => {
+      console.log(req.query.email);
+      let query = {};
+      if (req.query?.email) {
+          query = { email: req.query.email }
+      }
+      const result = await jewelryCollection.find(query).toArray();
+      res.send(result);
+    })
+      
     
     
 
