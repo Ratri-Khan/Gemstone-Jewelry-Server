@@ -22,10 +22,11 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         //Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    const jewelryCollection = client.db("jewelryDB").collection("jewelry");
-    // const jewelryCategories = client.db('jewelryDB').collection('jewelryCategories');
+        await client.connect();
+        const jewelryCollection = client.db("jewelryDB").collection("jewelry");
 
+
+        // data recieve from client side and store mongoDB
         app.post('/jewelry', async (req, res) => {
             const newJewelry = req.body;
             console.log(newJewelry);
@@ -37,50 +38,42 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
-        //*************************************
+        //for categories
         app.get('/categories', async (req, res) => {
-                let query = {};
-                if (req.query?.subCategory) {
-                    query = { subCategory: req.query.subCategory }
-                }
-                const result = await jewelryCollection.find(query).toArray();
-                res.send(result);
-              })
-        //***************************************
+            let query = {};
+            if (req.query?.subCategory) {
+                query = { subCategory: req.query.subCategory }
+            }
+            const result = await jewelryCollection.find(query).toArray();
+            res.send(result);
+        })
+        //for details
         app.get('/jewelry/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await jewelryCollection.findOne(query);
             res.send(result);
-      })
-      //**************************************
-      app.delete('/jewelry/:id',async(req,res) =>{
-        const id = req.params.id;
-        const query = {_id: new ObjectId(id)}
-        const result = await jewelryCollection.deleteOne(query);
-        res.send(result)
-      })//This code for delete
+        })
+        //for delete operation
+        app.delete('/jewelry/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await jewelryCollection.deleteOne(query);
+            res.send(result)
+        })
+        // send data for my jewelry page
+        app.get('/bookings', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await jewelryCollection.find(query).toArray();
+            res.send(result);
+        })
 
-      // send data for my jewelry page
-    //   app.post('/Bookings', async (req, res) => {
-    //     const booking = req.body;
-    //     console.log(booking);
-    //     const result = await BookingCollection.insertOne(booking);
-    //     res.send(result);
-    // });
-    
-     app.get('/bookings', async (req, res) => {
-      console.log(req.query.email);
-      let query = {};
-      if (req.query?.email) {
-          query = { email: req.query.email }
-      }
-      const result = await jewelryCollection.find(query).toArray();
-      res.send(result);
-    })
-      
-    
-    
+
+
 
 
 
